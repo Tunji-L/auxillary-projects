@@ -5,7 +5,7 @@ FILE="names.csv"
 
 if [ -f "$FILE" ]
 then
-	# Storing the names in a variable
+	# Storing the names as a list in a variable
 	NAMES=$(cat $FILE)
 	for NAME in $NAMES
 	do
