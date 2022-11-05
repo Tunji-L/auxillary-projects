@@ -1,0 +1,37 @@
+#!/usr/bin/bash
+
+# File that contains the user names
+FILE="names.csv"
+
+if [ -f "$FILE" ]
+then
+	# Storing the names in a variable
+	NAMES=$(cat $FILE)
+	for NAME in $NAMES
+	do
+		# Display name
+		echo $NAME 
+
+		# Check if the name already exist
+		if id "$NAME" &> /dev/null
+		then
+			echo "user $NAME already exists"
+		else
+			# create user on the server
+			useradd -m -s /bin/bash -g developers $NAME
+			echo "User added successfully"
+
+			# Create the .ssh folder and authorized_key file
+			su - -c "mkdir ~/.ssh && touch ~/.ssh/authorized_keys" $NAME
+			echo ".ssh folder and authorized_key created successfully"
+
+			# Copy the the authorized key content from user ubuntu to the newly created user
+			cp -R "/home/ubuntu/.ssh/authorized_keys" "/home/$NAME/.ssh/authorized_keys"
+			echo "authorized_key copied successfully"
+
+			# Creating a default password for the newly created user
+			echo -e "password\npassword" | passwd $NAME
+		fi
+
+	done
+fi
